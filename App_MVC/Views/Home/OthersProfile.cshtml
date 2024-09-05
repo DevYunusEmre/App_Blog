@@ -1,0 +1,218 @@
+﻿@model OthersProfileVM
+@{
+    ViewData["Title"] = "OthersProfile";
+}
+
+  
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .article-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        padding: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .article-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+    .article-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .article-header h3 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .article-header a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+            .article-header a:hover {
+                text-decoration: underline;
+            }
+
+    .article-content {
+        margin-top: 10px;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    .article-image img {
+        border-radius: 8px;
+        object-fit: cover;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .col-9, .col-3 {
+        padding: 0 15px;
+    }
+
+    .col-9 {
+        flex: 0 0 75%;
+        max-width: 75%;
+    }
+
+    .col-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+
+    .userImage {
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+    }
+
+    .image-container {
+        width: 100%; /* Konteynerin genişliğini ayarla */
+        max-width: 600px; /* Konteynerin maksimum genişliğini ayarla */
+        height: auto; /* Yüksekliği otomatik olarak ayarla */
+        overflow: hidden; /* Taşmayı gizle */
+    }
+
+        .image-container img {
+            width: 100%; /* Resmi konteyner genişliğine göre ayarla */
+            height: auto; /* Orantılı olarak yüksekliği ayarla */
+            object-fit: contain; /* Resmi orantılı olarak kapsayıcıya yerleştir */
+        }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    .text-container {
+        display: -webkit-box; /* Flexbox modelini uygular */
+        -webkit-line-clamp: 2; /* Görünür satır sayısını belirler */
+        -webkit-box-orient: vertical; /* Dikey hizalama */
+        overflow: hidden; /* Taşmayı gizler */
+        text-overflow: ellipsis; /* Taşan metni 3 nokta ile keser */
+        line-height: 1.5; /* Satır yüksekliği ayarı (gerektiğinde değiştirin) */
+        max-height: 3em; /* İki satır yüksekliği için ayarlanabilir */
+    }
+
+    .profile-image {
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+        margin: 0 0 15px;
+    }
+
+</style>
+
+
+<!--Kullanıcı Bilgileri-->
+
+<div class="container row">
+
+    <!--profil foto-->
+    <div class="col-auto  ">
+        @if (Model.ImageUrl != null)
+        {
+            <img class="profile-image" src="~/img/@Model.ImageUrl" alt="Profile Image">
+        }
+        else
+        {
+            <img class="profile-image" src="https://placehold.co/200x200/png" alt="Profile Image">
+        }
+    </div>
+
+    <!--profil bilgileri-->
+    <div class="col-10 d-flex align-items-end  ">
+        <h5 class="user-name mb-3">@Model.Email</h5>
+    </div>
+     
+</div>
+
+
+<!--Makaleler listeleniyor-->
+@if (Model is not null)
+{
+    @foreach (var item in Model.StoryVMs)
+    {
+        <a id="@item.Id" asp-controller="Story" asp-action="ReadStory" asp-route-storyId="@item.Id"></a>
+
+        <div class="article-container hoverable" onclick="yonlendirme(@item.Id)">
+            <div class="row align-items-center">
+
+                <div class="row">
+
+                    <div class="col-9">
+                        <!--foto ve mail-->
+                        <div class="d-flex justify-content-start align-items-center mb-2   ">
+                            <img class="userImage" src="https://placehold.co/90x90/png" alt="Profile Image">
+                            <a class="ms-2">@item.UserName</a>
+                        </div>
+                        <!--Başlık-->
+                        <div class="article-header row">
+                            <h3>@item.Title</h3>
+                        </div>
+                        <!--İçerik-->
+                        <div class="article-content row">
+                            <div class="  text-container">
+                                @item.Content
+                            </div>
+                        </div>
+
+                        <!--görüntülenme sayısı ve like butonu -->
+                        <div class="d-flex justify-content-start align-items-center ">
+
+                            <!--goruntulenme sembolü ve sayısı-->
+                            <i class="bi bi-eye" style="font-size:20px"></i>
+                            <a class="ms-1 ">@item.ViewCount</a>
+
+
+
+                        </div>
+
+                        <!--Yayınlanma tarihi-->
+                        <div class="article-content text-truncate row ">
+                            <p class="ms-2">Yayınlanma Tarihi:@item.CreatedDate.ToString("yyyy-MM-dd")</p>
+                        </div>
+                    </div>
+
+                    <div class="col-3   row ">
+                        <div class="image-container">
+                            @if (item.ImageUrl != null)
+                            {
+                                <img class="  " src="~/img/@item.ImageUrl" alt="Article Image" />
+                            }
+                            else
+                            {
+                                <img class=" " src="https://placehold.co/200x200/png" alt="Placeholder Image" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+    }
+}
+

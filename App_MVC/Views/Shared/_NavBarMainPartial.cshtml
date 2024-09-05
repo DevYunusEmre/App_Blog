@@ -1,0 +1,50 @@
+﻿ 
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container">
+        <a class="  navbar-brand fw-bold btn hoverable" style="color:rgb(124,147,195)" asp-area="" asp-controller="Home" asp-action="Index">Hoşgeldin</a>
+        <a class="  navbar-brand fw-bold btn hoverable" style="color:rgb(124,147,195)" asp-area="" asp-controller="Home" asp-action="AboutUs">Hakkımızda</a>
+        <a class="  navbar-brand fw-bold btn hoverable" style="color:rgb(124,147,195)" asp-area="" asp-controller="Topic" asp-action="Index">Konular</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between   row">
+
+            <div class="col-auto">
+                 
+            </div>
+
+            <div class="col-auto row row align-items-center  ">
+                <div class="col-auto row align-items-center   ">
+                    @TempData["username"]
+                </div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="col-auto">
+                        <b>@User.Identity.Name</b>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-secondary me-3 hoverable" asp-area="" asp-controller="Story" asp-action="Create" style="background-color:rgb(124,147,195)">Yazı Paylaş</a>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-secondary me-3 hoverable" asp-area="" asp-controller="Account" asp-action="Profile" style="background-color:rgb(124,147,195)">Profil</a>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-secondary me-3 hoverable" asp-area="" asp-controller="Account" asp-action="Logout" style="background-color:rgb(124,147,195)">Çıkış Yap</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-auto">
+                        <a class="btn btn-secondary me-3 hoverable" asp-area="" asp-controller="Account" asp-action="Register" style="background-color:rgb(124,147,195)">Kayıt Ol</a>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-secondary me-3 hoverable" asp-area="" asp-controller="Account" asp-action="Login" style="background-color:rgb(124,147,195)">Giriş Yap</a>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>
+</nav>

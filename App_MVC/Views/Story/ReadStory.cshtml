@@ -1,0 +1,213 @@
+﻿@model ReadStoryVM
+
+@{
+    ViewData["Title"] = "ReadStory";
+}
+
+
+<style>
+    .hidden {
+        display: none;
+    }
+
+    .userImage {
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+    }
+
+    .image-container {
+        width: 100%; /* Konteynerin genişliğini ayarla */
+        max-width: 600px; /* Konteynerin maksimum genişliğini ayarla */
+        height: auto; /* Yüksekliği otomatik olarak ayarla */
+        overflow: hidden; /* Taşmayı gizle */
+    }
+
+        .image-container img {
+            width: 100%; /* Resmi konteyner genişliğine göre ayarla */
+            height: auto; /* Orantılı olarak yüksekliği ayarla */
+            object-fit: contain; /* Resmi orantılı olarak kapsayıcıya yerleştir */
+        }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+</style>
+
+<a id="@Model.UserId" asp-controller="Home" asp-action="OthersProfile" asp-route-userId="@Model.UserId"> </a>
+
+<div class="article-container">
+
+
+    <div class="row justify-content-center   ">
+        <div class="col-9  ">
+            <!--foto ve kullanıcı adı-->
+            <div class="d-flex justify-content-start align-items-center hoverable d-flex " onclick="yonlendirme('@Model.UserId')">
+                @if (Model.UserImageUrl != null)
+                {
+                    <img class="userImage " src="~/img/@Model.UserImageUrl" width="auto" height="20px" />
+                }
+                else
+                {
+                    <img class="userImage" src="https://placehold.co/200x200/png" alt="Profile Image">
+                }
+                <div class="ms-2">
+                    @Model.UserName
+                </div>
+
+            </div>
+
+            <!--Başlık-->
+            <h2> @Model.Title</h2>
+            <!--NOT: aşağıdaki onclick fucn'ta tek tırnak içine aldım çünkü bu string değer a elementine tırnaksız yazdım
+                eğer UserId int olsaydı fucn içinde tırnak kullanmam gerekmezdi
+            -->
+            <!--İçerik-->
+            <div class="container row  align-items-center   mt-2">
+                @Model.Content
+            </div>
+
+            <hr />
+
+            <!--görüntülenme ve ve like butonu ve yayınlanma tarihi-->
+            <div class="d-flex justify-content-start align-items-center border-top border-bottom">
+
+                <!--goruntulenme sembolü ve sayısı-->
+                <i class="bi bi-eye" style="font-size:20px"></i>
+                <a class="ms-2">@Model.ViewCount</a>
+
+                <!--Ajax ve Like button-->
+                <section>
+                    <style>
+                        .like-btn {
+                            cursor: pointer;
+                            font-size: 18px;
+                            color: #ccc;
+                        }
+
+                        .liked {
+                            color: red;
+                        }
+
+                        .hover-link {
+                            color: red; /* Varsayılan renk */
+                            text-decoration: none; /* Alt çizgiyi kaldırır */
+                            transition: color 0.3s ease; /* Geçiş efektini yumuşatır */
+                        }
+
+                            .hover-link:hover {
+                                color: darkred; /* Mouse ile gelindiğinde kırmızı olur */
+                            }
+                    </style>
+
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+                    <!--ELEMENT: Like butonu on ve off konumu ile birlikte 2 tane yazdım-->
+                    <a id="likeButton1" class="hover-link bi-heart-fill like-btn liked ms-2"> </a>
+                    <a id="likeButton2" class="hover-link bi-heart like-btn ms-2"> </a>
+                    <script>
+                        var userId = '@Model.CurrentUserId';
+                        var storyId = @Model.Id;
+                        var isUserLiked = @Model.IsUserLiked.ToString().ToLower();
+                        var likeCount = -1;
+
+                        if (isUserLiked) {
+                            likeCount = @Model.Likes -1;
+                            document.getElementById("likeButton1").style.display = 'block';
+                            document.getElementById("likeButton2").style.display = 'none';
+                            document.getElementById('likeButton1').textContent = (likeCount + 1)
+                        } else {
+                            likeCount = @Model.Likes  ;
+                            document.getElementById("likeButton1").style.display = 'none';
+                            document.getElementById("likeButton2").style.display = 'block';
+                            document.getElementById('likeButton2').textContent = (likeCount)
+                        }
+                        document.getElementById("test").textContent = isUserLiked;
+
+                    </script>
+
+
+                </section>
+
+                <!--Yayınlanma tarihi-->
+                <div class="ms-2 fw-bold">
+                     Yayınlanma Tarihi:@Model.CreatedDate.ToString("yyyy-MM-dd") 
+                </div>
+            </div>
+               
+        </div>
+
+        <div class="col-3  row  ">
+            <div class="image-container">
+                @if (Model.ImageUrl != null)
+                {
+                    <img class=" " src="~/img/@Model.ImageUrl" alt="Article Image" />
+                }
+                else
+                {
+                    <img src="https://placehold.co/200x200/png" alt="Profile Image">
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+</div>
+
+
+
+@section Scripts {
+    <script>
+
+        function myAjax(controller, action, onStateId, offStateId) {
+            $.ajax({
+                type: "get",
+                url: "/" + controller + "/" + action,
+                contentType: "application/json",
+                dataType: "Json",
+                data: { storyId: storyId, userId: userId },
+                success: function (data) {
+                    let isTrue = JSON.parse(data)
+                    if (isTrue) {
+                        document.getElementById(onStateId).style.display = 'block';
+                        document.getElementById(offStateId).style.display = 'none';
+
+                        document.getElementById(onStateId).textContent = (likeCount + 1)
+                        document.getElementById(offStateId).textContent = (likeCount + 1)
+                    } else {
+                        document.getElementById(onStateId).style.display = 'none';
+                        document.getElementById(offStateId).style.display = 'block';
+
+                        document.getElementById(onStateId).textContent = (likeCount)
+                        document.getElementById(offStateId).textContent = (likeCount)
+                    }
+
+                },
+                error: function (exception) {
+                    alert(exception);
+                    alert("hata oldu");
+                }
+            })
+        }
+
+        function mainMyAjax(controller, action, onStateId, offStateId) {
+            $('#' + onStateId).on('click', function () {
+                // myAjax metodunu parametrelerle çağırıyoruz
+                myAjax(controller, action, onStateId, offStateId); // Burada parametreleri belirtin
+            });
+
+
+            $('#' + offStateId).on('click', function () {
+                // myAjax metodunu parametrelerle çağırıyoruz
+                myAjax(controller, action, onStateId, offStateId); // Burada parametreleri belirtin
+            });
+        }
+
+        mainMyAjax("Home", "Like2", "likeButton1", "likeButton2");
+
+    </script>
+
+}

@@ -1,0 +1,363 @@
+﻿@model HomeStoryVM
+@{
+    ViewData["Title"] = "Home Page";
+}
+  
+<section>
+
+
+    <script>
+        var isimler = {}; // Değişkenleri saklamak için bir nesne
+        var isimlendirmeCounter = 0;
+        var onStateId = '';
+        var offStateId = '';
+        var buDongudekiIsmi = '';
+        var currentStoryId = -1;
+        var currentUserId = "";
+    </script>
+
+</section>
+
+<script>
+    var isUserLiked = true;
+
+</script>
+
+@if (Model is not null)
+{
+    @section Scripts {
+    <div class="container">
+        <div class="row ">
+
+            <!--Makalelerin listelendiği sütun-->
+            <div class="col-9  ">
+
+                @foreach (var item in Model.StoryVMs)
+                    {
+                        <a id="@item.Id" asp-controller="Story" asp-action="ReadStory" asp-route-storyId="@item.Id"></a>
+                        <div class="article-container hoverable" onclick="yonlendirme(@item.Id)">
+                            <div class="row ">
+
+                                <div class="col-9">
+                                    <!--foto ve mail-->
+                                    <div class="d-flex justify-content-start align-items-center mb-2   ">
+                                        @if(item.UserImageUrl is null)
+                                        {
+                                            <img class="userImage" src="https://placehold.co/90x90/png" alt="Profile Image">
+                                        }
+                                        else
+                                        {
+                                            <img class="userImage " src="~/img/@item.UserImageUrl" width="auto" height="20px" />
+                                        }
+                                        
+                                        <a class="ms-2">@item.UserName</a>
+                                    </div>
+                                    <!--Başlık-->
+                                    <div class="article-header row">
+                                        <h3>@item.Title</h3>
+                                    </div>
+                                    <!--İçerik-->
+                                    <div class="article-content row">
+                                        <div class="  text-container">
+                                            @item.Content
+                                        </div>
+                                    </div>
+
+                                    <!--görüntülenme sayısı ve like butonu -->
+                                    <div class="d-flex justify-content-start align-items-center ">
+
+                                        <!--goruntulenme sembolü ve sayısı-->
+                                        <i class="bi bi-eye" style="font-size:20px"></i>
+                                        <a class="ms-1 ">@item.ViewCount</a>
+
+                                        <!--Ajax ve Like button-->
+                                        <section>
+                                            <style>
+                                                .like-btn {
+                                                    cursor: pointer;
+                                                    font-size: 18px;
+                                                    color: #ccc;
+                                                }
+
+                                                .liked {
+                                                    color: red;
+                                                }
+
+                                                .hover-link {
+                                                    color: red; /* Varsayılan renk */
+                                                    text-decoration: none; /* Alt çizgiyi kaldırır */
+                                                    transition: color 0.3s ease; /* Geçiş efektini yumuşatır */
+                                                }
+
+                                                    .hover-link:hover {
+                                                        color: darkred; /* Mouse ile gelindiğinde kırmızı olur */
+                                                    }
+                                            </style>
+
+                                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+                                            <!--ELEMENT: Like butonu on ve off konumu ile birlikte 2 tane yazdım-->
+                                            <a id='likeButton1' class="hover-link bi-heart-fill like-btn liked ms-2"> </a>
+                                            <a id="likeButton2" class="hover-link bi-heart like-btn ms-2"> </a>
+
+                                            <script>
+                                                //Bu döngü için bazı değerler atanıyor
+                                                isUserLiked = @item.IsUserLiked.ToString().ToLower();
+                                                currentStoryId = '@item.Id';
+                                                currentUserId = '@item.CurrentUserId';
+
+                                                //her döngüde like butonlarının id'lerine özel isim atanıyor
+                                                isimler['isim_' + isimlendirmeCounter] = 'degerim' + isimlendirmeCounter; // Her döngüde farklı isimle değişken oluştur
+                                                buDongudekiIsmi = isimler['isim_' + isimlendirmeCounter];
+                                                isimlendirmeCounter += 1;//her döngüde yeni isim koymak için 1 arttırdım bunu
+
+                                                //bu döngüde kullanılacak like buton id'leri
+                                                onStateId = 'on_' + buDongudekiIsmi;
+                                                offStateId = 'off_' + buDongudekiIsmi;
+
+                                                //likebuttonların idleri güncelleniyor
+                                                document.getElementById("likeButton1").id = onStateId;
+                                                document.getElementById("likeButton2").id = offStateId;
+
+                                                //eğer o kullanıcı bunu beğenmişse veya beğenmemişse ona göre buton rengi değişiyor
+                                                if (isUserLiked) {
+                                                    likeCount = @item.Likes -1;
+                                                    document.getElementById(onStateId).style.display = 'block';
+                                                    document.getElementById(offStateId).style.display = 'none';
+                                                    document.getElementById(onStateId).textContent = (likeCount + 1)
+                                                } else {
+                                                    likeCount = @item.Likes  ;
+                                                    document.getElementById(onStateId).style.display = 'none';
+                                                    document.getElementById(offStateId).style.display = 'block';
+                                                    document.getElementById(offStateId).textContent = (likeCount)
+                                                }
+                                            </script>
+
+                                            <!--Ajax script: burada yukarıdaki like butonlarına göre çalışan parametreli bir ajax metodu var -->
+                                            <section>
+                                                <script>
+
+                                                    //temel parametrelerle yukarıya göre çalışan ajax metodu
+                                                    function myAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId) {
+                                                        $.ajax({
+                                                            type: "get",
+                                                            url: "/" + controller + "/" + action,
+                                                            contentType: "application/json",
+                                                            dataType: "Json",
+                                                            data: { storyId: currentStoryId, userId: currentUserId },
+                                                            success: function (data) {
+                                                                let isTrue = JSON.parse(data);
+                                                                if (isTrue) {
+                                                                    console.log("calişan ajax onstateId: " + onStateId);
+                                                                    document.getElementById(onStateId).style.display = 'block';
+                                                                    document.getElementById(offStateId).style.display = 'none';
+                                                                    document.getElementById(onStateId).textContent = (likeCount + 1);
+                                                                } else {
+                                                                    console.log("calişan ajax onstateId: " + onStateId);
+                                                                    document.getElementById(onStateId).style.display = 'none';
+                                                                    document.getElementById(offStateId).style.display = 'block';
+                                                                    document.getElementById(offStateId).textContent = (likeCount);
+                                                                }
+                                                            },
+                                                            error: function (exception) {
+                                                                alert(exception);
+                                                                alert("hata oldu");
+                                                            }
+                                                        });
+                                                    }
+
+                                                    //2 ayrı like butonu için (beğendi/beğenmedi) ajax metodunu click eventlerine atadım
+                                                    function mainMyAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId) {
+                                                        console.log("metot " + onStateId + " ve " + offStateId + " için çalışıyor ");
+                                                        $('#' + onStateId).on('click', function () {
+                                                            // myAjax metodunu parametrelerle çağırıyoruz
+                                                            myAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId);
+                                                        });
+
+                                                        $('#' + offStateId).on('click', function () {
+                                                            // myAjax metodunu parametrelerle çağırıyoruz
+                                                            myAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId);
+                                                        });
+                                                    }
+
+                                                    // Döngü veya işlemler sırasında IIFE kullanarak her adımda benzersiz parametreler vererek her biri için ayrı ayrı çalışmasını sağlar
+                                                    (function (controller, action, onStateId, offStateId, currentStoryId, currentUserId) {
+                                                        // Ana fonksiyonu çağırıyoruz
+                                                        mainMyAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId);
+                                                        // Dinamik elementler oluşturuluyorsa, bu ID'lerle elementler oluşturabilirsiniz
+                                                        // $('body').append(`<button id="${onStateId}">On Button ${i}</button>`);
+                                                        //  $('body').append(`<button id="${offStateId}">Off Button ${i}</button>`);
+                                                    })('Home', 'Like2', onStateId, offStateId, currentStoryId, currentUserId);
+
+                                                </script>
+                                            </section>
+
+                                        </section>
+                                    </div>
+
+                                    <!--Yayınlanma tarihi-->
+                                    <div class="article-content text-truncate row ">
+                                        <p class="ms-2">Yayınlanma Tarihi:@item.CreatedDate.ToString("yyyy-MM-dd")</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-3   row image-container">
+                                    @if (item.ImageUrl != null)
+                                    {
+                                        <img class="  " src="~/img/@item.ImageUrl" alt="Article Image" />
+                                    }
+                                    else
+                                    {
+                                        <img class=" " src="https://placehold.co/200x200/png" alt="Placeholder Image" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                    }
+                </div>
+
+                <!--Sağ taraf-->
+                <div class="col-3  mb-5">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Ara
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+
+                                    <!--search form -->
+                                   <section>
+                                        <form method="get" asp-controller="Home" asp-action="Search">
+                                            <input type="text" name="search" placeholder="Ara..." />
+                                            <button type="submit" style="background-color:rgb(124,147,195)" class="btn btn-secondary text-light">Ara</button>
+
+                                            <!-- Kategori Seçimi -->
+                                            <section>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Kategoriler:</label>
+                                                    <ul class="list-group" id="categoryList">
+                                                        @foreach (var topic in Model.Topics)
+                                                        {
+                                                            <li class="list-group-item d-none" data-id="@topic.Id">
+                                                                <!-- Gizli Checkbox -->
+                                                                <input type="checkbox" class="d-none" name="selectedCategories" value="@topic.Id"
+                                                                @(ViewBag.SelectedCategories != null && ViewBag.SelectedCategories.Contains(topic.Id) ? "checked" : "") />
+                                                                <!-- Kategori Yazısı -->
+                                                                <span>@topic.TopicName</span>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                    <button type="button" id="showMoreBtn" class="btn btn-link p-0">Hepsini Göster</button>
+                                                </div>
+                                            </section>
+
+                                            <input type="hidden" id="selectedCategories" name="selectedCategories" />
+                                        </form>
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                const selectedCategories = new Set();
+                                                const items = document.querySelectorAll('#categoryList .list-group-item');
+                                                const showMoreBtn = document.getElementById('showMoreBtn');
+
+                                                // İlk 5 kategoriyi göster, geri kalanları gizle
+                                                items.forEach((item, index) => {
+                                                    if (index < 5) {
+                                                        item.classList.remove('d-none'); // İlk 5 tanesini göster
+                                                    }
+                                                });
+
+                                                // "Hepsini Göster" butonuna tıklanınca tüm kategorileri göster
+                                                showMoreBtn.addEventListener('click', function () {
+                                                    items.forEach(item => item.classList.remove('d-none')); // Tümünü göster
+                                                    showMoreBtn.classList.add('d-none'); // Butonu gizle
+                                                });
+
+                                                // Kategori öğesine tıklama olayı
+                                                items.forEach(item => {
+                                                    item.addEventListener('click', function () {
+                                                        const categoryId = parseInt(this.getAttribute('data-id'));
+                                                        const checkbox = this.querySelector('input[type="checkbox"]');
+
+                                                        // Seçimi toggle et
+                                                        if (selectedCategories.has(categoryId)) {
+                                                            selectedCategories.delete(categoryId);
+                                                            this.classList.remove('active');
+                                                            checkbox.checked = false;
+                                                        } else {
+                                                            selectedCategories.add(categoryId);
+                                                            this.classList.add('active');
+                                                            checkbox.checked = true;
+                                                        }
+
+                                                        // Seçilen kategorileri gizli input'a ekle
+                                                        document.getElementById('selectedCategories').value = Array.from(selectedCategories).join(',');
+                                                    });
+                                                });
+                                            });
+                                        </script>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Takip Ettiğiniz Konular
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Takip Ettiğiniz Yazarlar
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

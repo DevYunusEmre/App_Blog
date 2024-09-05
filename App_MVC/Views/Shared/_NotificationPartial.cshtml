@@ -1,0 +1,36 @@
+﻿ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.css" integrity="sha512-oe8OpYjBaDWPt2VmSFR+qYOdnTjeV9QPLJUeqZyprDEQvQLJ9C5PCFclxwNuvb/GQgQngdCXzKSFltuHD3eCxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+@if(TempData["success"]!=null)
+{
+    <script>
+        toastr.success('@TempData["success"]')
+    </script>
+}
+@if (TempData["info"] is not null)
+{
+    <script>
+        toastr.info('@TempData["info"]')
+    </script>
+}
+@if (TempData["warning"] is not null)
+{
+    <script>
+        toastr.info('@TempData["warning"]')
+    </script>
+}
+@if (TempData["Error"] is not null)
+{
+    <script>
+        toastr.info('@TempData["Error"]')
+    </script>
+}
+
+
+
+

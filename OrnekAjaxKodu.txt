@@ -1,0 +1,130 @@
+
+
+	Örnek ajax kodu ve açýklamasý
+	 
+	    - html sayfasý baþýnda her döngüde kullanýlmak üzere bazý deðiþkenler tanýmlandý bunlar:
+		    <script>
+                //burdaki isim listesi çalýþmýyor olabilr buna bi bak
+                var isimler = {}; // Deðiþkenleri saklamak için bir nesne
+                var isimlendirmeCounter = 0;
+                var onStateId = '';
+                var offStateId = '';
+                var buDongudekiIsmi = '';
+                var currentStoryId = -1;
+                var currentUserId = "";
+            </script>
+	
+        - @section Scripts{} içerisine yazýlan kod bölümü
+
+        - burda bir foreach içerisine yazýlýyorlar
+
+                                    - a elementleri yani týklanacak elementler bunlarýn týklanmasýna göre onlara atanan ajax metodu 
+                                    belirli parametrelerle çalýþacaktýr. 
+
+                                        <a id='likeButton1' class="hover-link bi-heart-fill like-btn liked"> </a>
+                                        <a id="likeButton2" class="hover-link bi-heart like-btn "> </a>
+
+                                    - bu döngü için bazý deðerler ilgili makale bilgilerine göre aþaðýda güncelleniyor
+                                    ayrýca bu döngüye ait her bir butona özel Id atanýyor
+                                    her birine function tanýmlanýyor
+                                    butonlarýn beðenip beðenmeme durumuna göre baþlangýç þekilleri ayarlanýyor
+
+                                        <script>
+                                            //Bu döngü için bazý deðerler atanýyor
+                                            isUserLiked = @item.IsUserLiked.ToString().ToLower();
+                                            currentStoryId = '@item.Id';
+                                            currentUserId = '@item.CurrentUserId';
+
+                                            //her döngüde like butonlarýnýn id'lerine özel isim atanýyor
+                                            isimler['isim_' + isimlendirmeCounter] = 'degerim' + isimlendirmeCounter; // Her döngüde farklý isimle deðiþken oluþtur
+                                            buDongudekiIsmi = isimler['isim_' + isimlendirmeCounter];
+                                            isimlendirmeCounter += 1;//her döngüde yeni isim koymak için 1 arttýrdým bunu
+
+                                            //bu döngüde kullanýlacak like buton id'leri
+                                            onStateId = 'on_' + buDongudekiIsmi;
+                                            offStateId = 'off_' + buDongudekiIsmi;
+
+                                            //likebuttonlarýn idleri güncelleniyor
+                                            document.getElementById("likeButton1").id = onStateId;
+                                            document.getElementById("likeButton2").id = offStateId;
+                                             
+                                            //eðer o kullanýcý bunu beðenmiþse veya beðenmemiþse ona göre buton rengi deðiþiyor
+                                            if (isUserLiked) {
+                                                likeCount = @item.Likes -1;
+                                                document.getElementById(onStateId).style.display = 'block';
+                                                document.getElementById(offStateId).style.display = 'none';
+                                                document.getElementById(onStateId).textContent = (likeCount + 1)
+                                            } else {
+                                                likeCount = @item.Likes  ;
+                                                document.getElementById(onStateId).style.display = 'none';
+                                                document.getElementById(offStateId).style.display = 'block';
+                                                document.getElementById(offStateId).textContent = (likeCount)
+                                            } 
+
+                                        </script>
+
+                                    - burada ajax metodumu tanýmlýyorum 
+
+                                        <!--Ajax script: burada yukarýdaki like butonlarýna göre çalýþan parametreli bir ajax metodu var -->
+                                        <section>
+                                            <script>
+
+                                                //temel parametrelerle yukarýya göre çalýþan ajax metodu
+                                                function myAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId) {
+                                                    $.ajax({
+                                                        type: "get",
+                                                        url: "/" + controller + "/" + action,
+                                                        contentType: "application/json",
+                                                        dataType: "Json",
+                                                        data: { storyId: currentStoryId, userId: currentUserId },
+                                                        success: function (data) {
+                                                            let isTrue = JSON.parse(data);
+                                                            if (isTrue) {
+                                                                console.log("caliþan ajax onstateId: " + onStateId);
+                                                                document.getElementById(onStateId).style.display = 'block';
+                                                                document.getElementById(offStateId).style.display = 'none';
+                                                                document.getElementById(onStateId).textContent = (likeCount + 1);
+                                                            } else {
+                                                                console.log("caliþan ajax onstateId: " + onStateId);
+                                                                document.getElementById(onStateId).style.display = 'none';
+                                                                document.getElementById(offStateId).style.display = 'block';
+                                                                document.getElementById(offStateId).textContent = (likeCount);
+                                                            }
+                                                        },
+                                                        error: function (exception) {
+                                                            alert(exception);
+                                                            alert("hata oldu");
+                                                        }
+                                                    });
+                                                }
+                                    
+                                    - burada 2 butonum var (beðenme/beðenmeme)
+                                    bu iki buton için ajax metodu atýyorum 
+
+                                                //2 ayrý like butonu için (beðendi/beðenmedi) ajax metodunu click eventlerine atadým
+                                                function mainMyAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId) {
+                                                    console.log("metot " + onStateId + " ve " + offStateId + " için çalýþýyor ");
+                                                    $('#' + onStateId).on('click', function () {
+                                                        // myAjax metodunu parametrelerle çaðýrýyoruz
+                                                        myAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId);
+                                                    });
+
+                                                    $('#' + offStateId).on('click', function () {
+                                                        // myAjax metodunu parametrelerle çaðýrýyoruz
+                                                        myAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId);
+                                                    });
+                                                }
+                                    
+                                    - burada ilgili döngüdeki parametrelere göre ajax metodunu çaðýrýyorum
+                                    artýk butona her týklandýðýnda gidip gerekli iþlemi yapacak
+                                                // Döngü veya iþlemler sýrasýnda IIFE kullanarak her adýmda benzersiz parametreler vererek her biri için ayrý ayrý çalýþmasýný saðlar
+                                                (function (controller, action, onStateId, offStateId, currentStoryId, currentUserId) {
+                                                    // Ana fonksiyonu çaðýrýyoruz
+                                                    mainMyAjax(controller, action, onStateId, offStateId, currentStoryId, currentUserId);
+                                                    // Dinamik elementler oluþturuluyorsa, bu ID'lerle elementler oluþturabilirsiniz
+                                                    $('body').append(`<button id="${onStateId}">On Button ${i}</button>`);
+                                                    $('body').append(`<button id="${offStateId}">Off Button ${i}</button>`);
+                                                })('Home', 'Like2', onStateId, offStateId, currentStoryId, currentUserId);
+                                                 
+                                            </script>
+                                        </section>

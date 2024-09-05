@@ -1,0 +1,124 @@
+﻿@model List<TopicListVM>
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+
+
+
+
+<script>
+    //burdaki isim listesi çalışmıyor olabilr buna bi bak
+    var isimler = {}; // Değişkenleri saklamak için bir nesne
+    var isimlendirmeCounter = 0;
+    var onStateId = '';
+    var offStateId = '';
+    var buDongudekiIsmi = '';
+    var currentTopicId = -1;
+    var isSelected = false;
+</script>
+
+
+@section Scripts {
+    <div class=" container text-center justify-content-center">
+        <h1>Kategoriler</h1>
+        <hr />
+
+        <div class="row justify-content-center">
+
+
+            @foreach (var item in Model)
+            {
+                <h3 id='likeButton1' class="col-3 border  bg-success navbar-brand fw-bold btn hoverable text-light">@item.Topic.TopicName</h3>
+                <h3 id="likeButton2" class="col-3 border   navbar-brand fw-bold btn hoverable">@item.Topic.TopicName</h3>
+
+
+                <script>
+                    //Bu döngü için bazı değerler atanıyor
+                    isSelected = @item.IsSelected.ToString().ToLower();
+                    currentTopicId = '@item.Topic.Id';
+
+                    //her döngüde like butonlarının id'lerine özel isim atanıyor
+                    isimler['isim_' + isimlendirmeCounter] = 'degerim' + isimlendirmeCounter; // Her döngüde farklı isimle değişken oluştur
+                    buDongudekiIsmi = isimler['isim_' + isimlendirmeCounter];
+                    isimlendirmeCounter += 1;//her döngüde yeni isim koymak için 1 arttırdım bunu
+
+                    //bu döngüde kullanılacak like buton id'leri
+                    onStateId = 'on_' + buDongudekiIsmi;
+                    offStateId = 'off_' + buDongudekiIsmi;
+
+                    //likebuttonların idleri güncelleniyor
+                    document.getElementById("likeButton1").id = onStateId;
+                    document.getElementById("likeButton2").id = offStateId;
+
+                    //eğer o kullanıcı bunu beğenmişse veya beğenmemişse ona göre buton rengi değişiyor
+                    if (isSelected) {
+                        document.getElementById(onStateId).style.display = 'inline';
+                        document.getElementById(offStateId).style.display = 'none';
+                    } else {
+                        document.getElementById(onStateId).style.display = 'none';
+                        document.getElementById(offStateId).style.display = 'inline';
+                    }
+                </script>
+
+                <!--Ajax script: burada yukarıdaki like butonlarına göre çalışan parametreli bir ajax metodu var -->
+                <script>
+
+                    //temel parametrelerle yukarıya göre çalışan ajax metodu
+                    function myAjax(controller, action, onStateId, offStateId, currentTopicId, isSelected) {
+                        $.ajax({
+                            type: "get",
+                            url: "/" + controller + "/" + action,
+                            contentType: "application/json",
+                            dataType: "Json",
+                            data: { topicId: currentTopicId, isSelected: isSelected },
+                            success: function (data) {
+                                let isTrue = JSON.parse(data);
+                                if (isTrue) {
+                                    document.getElementById(onStateId).style.display = 'inline';
+                                    document.getElementById(offStateId).style.display = 'none';
+                                } else {
+                                    document.getElementById(onStateId).style.display = 'none';
+                                    document.getElementById(offStateId).style.display = 'inline';
+                                }
+                            },
+                            error: function (exception) {
+                                alert(exception);
+                                alert("hata oldu");
+                            }
+                        });
+                    }
+
+                    //2 ayrı like butonu için (beğendi/beğenmedi) ajax metodunu click eventlerine atadım
+                    function mainMyAjax(controller, action, onStateId, offStateId, currentTopicId, isSelected) {
+                        console.log("metot " + onStateId + " ve " + offStateId + " için çalışıyor ");
+                        $('#' + onStateId).on('click', function () {
+                            // myAjax metodunu parametrelerle çağırıyoruz
+                            myAjax(controller, action, onStateId, offStateId, currentTopicId, isSelected);
+                        });
+
+                        $('#' + offStateId).on('click', function () {
+                            // myAjax metodunu parametrelerle çağırıyoruz
+                            myAjax(controller, action, onStateId, offStateId, currentTopicId, isSelected);
+                        });
+                    }
+
+                    // Döngü veya işlemler sırasında IIFE kullanarak her adımda benzersiz parametreler vererek her biri için ayrı ayrı çalışmasını sağlar
+                    (function (controller, action, onStateId, offStateId, currentTopicId, isSelected) {
+                        // Ana fonksiyonu çağırıyoruz
+                        mainMyAjax(controller, action, onStateId, offStateId, currentTopicId, isSelected);
+                        // Dinamik elementler oluşturuluyorsa, bu ID'lerle elementler oluşturabilirsiniz
+                        $('body').append(`<button id="${onStateId}">On Button ${i}</button>`);
+                        $('body').append(`<button id="${offStateId}">Off Button ${i}</button>`);
+                    })('Topic', 'AddRemoveTopic2', onStateId, offStateId, currentTopicId, isSelected);
+
+                </script>
+            }
+        </div>
+    </div>
+}
+
+
+

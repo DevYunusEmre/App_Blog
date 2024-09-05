@@ -1,0 +1,91 @@
+
+
+CheckList:
+
+
+	Sayfalar:
+		• Üyelik ve Giriþ Sayfasý	+ 	
+		• Üye Ayarlarý Sayfasý		+ 
+		• Site Ana sayfasý			+ 
+		• Makale Ekleme Sayfasý 	+
+		• Makale Okuma Sayfasý  	+
+		• Yazar Detay Sayfasý		+
+		• Hakkýmýzda Sayfasý		- 
+		• Konu Listesi Sayfasý 		- 
+		• Makale Listeleme Sayfasý 	-
+
+
+		
+	Üyelik Sayfasý:
+		Site ziyaretçileri e-posta adresi ile üye olabilmektedirler.  
+		Ziyaretçi üye olduktan sonra Ayarlar sayfasýndan  
+			• Ad soyad bilgisini düzenleyebilir. 
+			• Kendisiyle ilgili açýklama, fotoðraf ekleyebilir. 
+			• E-mail adresini deðiþtirebilir.
+
+	Giriþ Sayfasý 
+		Kayýtlý kullanýcý mail adresini ve þifresini girip giriþ yapabilmelidir.
+
+
+	Site Ana sayfasý 
+		Site anasayfasýnda üyelere ve ziyaretçilere farklý sayfalar göstermektedir. 
+		Ziyaretçi anasayfasýnda 
+			• Site ile ilgili bilgiler içeren ve ziyaret eden kullanýcýyý üye olup, blog yazmaya yönlendirecek bir bölüm bulunmaktadýr.  
+			Bu bölüm içerisinden ayrýntýlý bilgi almak isteyen kullanýcýlar Hakkýmýzda sayfasýna 
+			yönlendirilmektedir. 
+		• En çok okunan makalelerin olduðu bir liste yer alýr. 
+		• Her konuda çeþitli makaleler bulunmaktadýr. 
+		Üye anasayfasýnda 
+			• Kullanýcýnýn takip ettiði konular ile ilgili makaleler listelenir 
+			• Kullanýcý henüz hiçbir konuyu takip etmediyse seçim yapabileceði konu baþlýklarý listesi sunulur. 
+			Eðer takip ettiði konular varsa bunlarýn listesi ve yeni konu eklemek için bir link yer alýr. Bu linke 
+			týklayýnca konularýn olduðu bir liste sayfasý açýlýr. 
+			• En çok okunan makalelerin olduðu bir liste vardýr. 
+			• Her konuda çeþitli makaleler bulunmaktadýr.
+
+	Makale Ekleme Sayfasý 
+		Ziyaretçi üye olduktan sonra kendi makalelerini yazmak istediðinde bu sayfaya gelir. Her makalenin 
+		baþlýk ve içerik alaný vardýr. Kullanýcý bu alanlara yalnýzca metinsel ifadeler ekleyebilmektedir. Makaleler 
+		birden fazla konuyu içinde barýndýrabilir ve oluþturulma aþamalarýnda bu þekilde iþaretlenebilirler 
+		Not: Üye her sayfadan makale ekleme sayfasýna geçebilmelidir.
+
+
+	Makale Listeleme Sayfasý 
+		Kullanýcýnýn yayýnladýðý makaleleri liste halinde gördüðü alandýr. 
+
+
+	Makale Okuma Sayfasý 
+		Site içerisinde gezinen üyeler ve ziyaretçiler merak ettikleri makalelere týklayarak okuyabilirler. Açýlan 
+		sayfada týklanýlan makale ile ilgili þu bilgiler bulunmaktadýr; 
+		• Baþlýk ve içerik 
+		• Yazan kiþinin adi soyadý varsa resmi  
+		Yazan kiþinin resmine veya adý soyadýný týklanýrsa o kullanýcýnýn kendi sayfasýna gidilecektir. 
+		• Ne zaman yazýldýðý 
+		• Ortalama ne kadar sürede okunacaðý 
+
+
+	Yazar Detay Sayfasý  
+		Yazar sayfasýnda resmi, adý, soyadý, kendisiyle ilgili yaptýðý açýklama ve en yeniden eskiye doðru yazdýðý 
+		makaleler listelenmektedir.
+
+
+	Proje Hazýrlanýrken Uygulanacak Yönerge 
+		Blog Sitesi Projesini yukarýda belirtilen maddelere uygun olarak gerçekleþtirmeniz gerekmektedir. 
+			1. Proje geliþtirilirken Waterfall Proje Yönetimi yaklaþýmý benimsenecektir. 
+			2. Projenin front-end tasarýmýný yapmakta herhangi bir kýsýtlama bulunmamaktadýr. Medium'a 
+			kesinlikle benzer olacak gibi bir durum söz konusu deðildir. 
+			3. Sizin tercih ettiðiniz katmanlý mimari modeli ile geliþtirme yapýlacakýr.
+
+
+
+	 
+
+
+
+
+
+
+
+
+
+
